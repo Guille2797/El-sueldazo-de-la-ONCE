@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <title>Calculadora Retribuciones MIR - GVA 2026</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Modo claro por defecto */
+        :root {
+            --bg-body: #f1f5f9;
+            --bg-app: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #5b6e8c;
+            --border-light: #e2e8f0;
+            --card-bg: #f8fafd;
+            --card-border: #eef2f6;
+            --preview-bg: #f1f6fa;
+            --tag-bg: #eef3fa;
+            --btn-back-bg: #eef2f8;
+            --btn-back-border: #dce5ed;
+            --slider-bg: linear-gradient(90deg, #4caf50 0%, #ffeb3b 36%, #ffc107 50%, #ff9800 64%, #f44336 100%);
+            --legal-note-color: #8ba0b5;
+            --signature-color: #0f3b5c;
+            --progress-bg: #cbd5e1;
+            --progress-done: #7ba5c0;
+            --step-dot-bg: #cbd5e1;
+            --step-dot-color: #475569;
+            --step-dot-active: #0f3b5c;
+            --step-dot-done: #7ba5c0;
+            --input-bg: #ffffff;
+            --input-border: #e2e8f0;
+            --irpf-slider-bg: #f8fafc;
+            --irpf-slider-border: #eef2f8;
+            --result-card-bg: #f8fafd;
+            --result-card-border: #eef2f6;
+            --deducciones-bg: #fff8e7;
+            --irpf-result-bg: #fff0f0;
+            --extra-pay-inactive-bg: #f3f4f6;
+            --extra-pay-active-bg: #dbeafe;
+        }
+
+        body.dark {
+            --bg-body: #0f172a;
+            --bg-app: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-light: #334155;
+            --card-bg: #334155;
+            --card-border: #475569;
+            --preview-bg: #2d3a4e;
+            --tag-bg: #2d3a4e;
+            --btn-back-bg: #2d3a4e;
+            --btn-back-border: #475569;
+            --legal-note-color: #64748b;
+            --signature-color: #94a3b8;
+            --progress-bg: #475569;
+            --progress-done: #64748b;
+            --step-dot-bg: #475569;
+            --step-dot-color: #94a3b8;
+            --step-dot-active: #3b82f6;
+            --step-dot-done: #64748b;
+            --input-bg: #334155;
+            --input-border: #475569;
+            --irpf-slider-bg: #2d3a4e;
+            --irpf-slider-border: #475569;
+            --result-card-bg: #334155;
+            --result-card-border: #475569;
+            --deducciones-bg: #4a3a1a;
+            --irpf-result-bg: #7f1d1d;
+            --extra-pay-inactive-bg: #2d3a4e;
+            --extra-pay-active-bg: #1e3a5f;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-body);
+            color: var(--text-primary);
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .app {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--bg-app);
+            border-radius: 1.75rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            padding: 1.5rem 1.25rem 2rem;
+            transition: background-color 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-light);
+            padding-bottom: 0.85rem;
+        }
+        .title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: nowrap;
+        }
+        .main-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--step-dot-active);
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .header-actions {
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+        }
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            min-width: 44px;
+            min-height: 44px;
+        }
+        .icon-btn:hover {
+            background: var(--border-light);
+        }
+        .icon-btn svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--text-secondary);
+            fill: none;
+        }
+        body.dark .dark-icon .sun-icon { display: block; }
+        body.dark .dark-icon .moon-icon { display: none; }
+        .dark-icon .sun-icon { display: none; }
+        .dark-icon .moon-icon { display: block; }
+
+        /* Progress bar */
+        .progress-bar {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            margin-bottom: 1.75rem;
+            padding: 0 0.25rem;
+        }
+        .step-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
+            font-weight: 700;
+            background: var(--step-dot-bg);
+            color: var(--step-dot-color);
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .step-dot.active {
+            background: var(--step-dot-active);
+            color: white;
+            box-shadow: 0 4px 12px rgba(15, 59, 92, 0.35);
+            transform: scale(1.05);
+        }
+        .step-dot.done {
+            background: var(--step-dot-done);
+            color: white;
+        }
+        .step-dot.disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: var(--progress-bg);
+            margin: 0 6px;
+            transition: background 0.3s ease;
+            cursor: pointer;
+            border-radius: 2px;
+        }
+        .step-line.done {
+            background: var(--progress-done);
+        }
+        .step-line.disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* Screens */
+        .screen {
+            display: none;
+            animation: smoothFade 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        .screen.active {
+            display: block;
+        }
+        @keyframes smoothFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .screen-heading {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            line-height: 1.25;
+            letter-spacing: -0.3px;
+        }
+
+        /* Cards grid */
+        .r-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.75rem;
+        }
+        .r-card {
+            background: var(--bg-app);
+            border: 1px solid var(--border-light);
+            border-radius: 1.25rem;
+            padding: 1rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .r-card:hover {
+            border-color: var(--step-dot-active);
+            background: var(--card-bg);
+        }
+        .r-card.selected {
+            border: 2px solid var(--step-dot-active);
+            background: var(--card-bg);
+        }
+        .r-label {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .r-salary {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        /* Guardias */
+        .guardia-section {
+            margin-bottom: 1rem;
+            border-radius: 1.25rem;
+            padding: 0.7rem 1rem;
+            transition: none;
+        }
+        .guardia-section.laborables {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.04));
+            border: 1px solid rgba(59, 130, 246, 0.25);
+        }
+        .guardia-section.sabados {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.04));
+            border: 1px solid rgba(245, 158, 11, 0.25);
+        }
+        .guardia-section.festivos {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(16, 185, 129, 0.04));
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+        .guardia-header {
+            margin-bottom: 0.4rem;
+        }
+        .guardia-titulo {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: block;
+            margin-bottom: 0.15rem;
+        }
+        .guardia-detalle {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: block;
+        }
+        .guardia-row {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            margin-top: 0.3rem;
+        }
+        .guardia-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            background: var(--bg-app);
+            padding: 0.1rem 0.3rem;
+            border-radius: 2rem;
+            border: 1px solid var(--border-light);
+        }
+        .btn-count {
+            background: transparent;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 700;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            color: var(--step-dot-active);
+            border-radius: 50%;
+            transition: transform 0.05s, background 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-count:active {
+            background: var(--border-light);
+            transform: scale(0.92);
+        }
+        .count-display {
+            font-size: 1rem;
+            font-weight: 700;
+            min-width: 24px;
+            text-align: center;
+            color: var(--text-primary);
+            transition: transform 0.1s ease;
+            display: inline-block;
+        }
+        .count-display:active {
+            transform: scale(1.15);
+        }
+        .guardia-preview {
+            background: var(--preview-bg);
+            border-radius: 1.25rem;
+            padding: 0.8rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+        }
+
+        /* IRPF grid */
+        .irpf-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin-bottom: 1.25rem;
+        }
+        .irpf-card {
+            background: var(--bg-app);
+            border: 1px solid var(--border-light);
+            border-radius: 1.25rem;
+            padding: 0.9rem 0.25rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 65px;
+        }
+        .irpf-card:hover {
+            border-color: var(--step-dot-active);
+            background: var(--card-bg);
+        }
+        .irpf-card.selected {
+            border: 2px solid var(--step-dot-active);
+            background: var(--card-bg);
+        }
+        .irpf-pct {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* Barra de colores IRPF */
+        .irpf-slider-container {
+            background: var(--irpf-slider-bg);
+            border-radius: 1.25rem;
+            padding: 0.9rem 1rem;
+            margin: 1rem 0;
+            border: 1px solid var(--irpf-slider-border);
+        }
+        .irpf-slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+        .irpf-slider-label {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: var(--text-secondary);
+            letter-spacing: 1px;
+        }
+        .irpf-slider-value {
+            font-weight: 800;
+            color: var(--text-primary);
+            font-size: 1rem;
+            background: var(--bg-app);
+            padding: 0.2rem 0.8rem;
+            border-radius: 2rem;
+            border: 1px solid var(--border-light);
+            min-width: 55px;
+            text-align: center;
+        }
+        .irpf-slider-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        input[type="range"] {
+            flex: 1;
+            height: 7px;
+            border-radius: 10px;
+            background: var(--slider-bg);
+            -webkit-appearance: none;
+        }
+        input[type="range"]:focus {
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--step-dot-active);
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Layout de resultados optimizado para móvil */
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin: 1rem 0;
+        }
+        .result-card {
+            background: var(--result-card-bg);
+            border-radius: 1.25rem;
+            padding: 0.9rem;
+            border: 1px solid var(--result-card-border);
+            display: flex;
+            flex-direction: column;
+        }
+        /* Casilla de paga extra */
+        .extra-pay-card {
+            background: var(--extra-pay-inactive-bg);
+            transition: background-color 0.2s ease;
+        }
+        .extra-pay-card.extra-pay-active {
+            background: var(--extra-pay-active-bg);
+        }
+        .extra-pay-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        .extra-pay-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .extra-pay-checkbox input {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--step-dot-active);
+        }
+        .extra-pay-checkbox label {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        .result-card.deducciones {
+            grid-column: span 1;
+            background: var(--deducciones-bg);
+        }
+        .result-card.irpf-card-result {
+            grid-column: span 1;
+            background: var(--irpf-result-bg);
+        }
+        .result-card.neto {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #4caf50, #2e7d32);
+            color: white;
+            border: none;
+        }
+        .result-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 0.2rem;
+        }
+        /* Estilos específicos para Retención IRPF */
+        .result-card.irpf-card-result .result-label {
+            color: #991b1b;
+        }
+        .result-card.irpf-card-result .result-amount {
+            color: #b91c1c;
+        }
+        .result-card.irpf-card-result .result-monthly {
+            color: #c2410c;
+        }
+        /* Estilos para Otras deducciones */
+        .result-card.deducciones .result-label {
+            color: #b86b0a;
+        }
+        .result-card.deducciones .result-amount {
+            color: #c2410c;
+            font-weight: 700;
+        }
+        .result-card.deducciones .result-monthly {
+            color: #8a6e3c;
+        }
+        /* Estilos para Salario neto */
+        .result-card.neto .result-label {
+            color: rgba(255,255,255,0.85);
+        }
+        .result-card.neto .result-amount {
+            color: white;
+        }
+        .result-card.neto .result-monthly {
+            color: rgba(255,255,255,0.7);
+        }
+        body.dark .result-card.irpf-card-result .result-label,
+        body.dark .result-card.irpf-card-result .result-amount,
+        body.dark .result-card.irpf-card-result .result-monthly {
+            color: #fca5a5;
+        }
+        body.dark .result-card.deducciones .result-label,
+        body.dark .result-card.deducciones .result-amount,
+        body.dark .result-card.deducciones .result-monthly {
+            color: #fbbf24;
+        }
+        
+        .result-amount {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0.2rem 0;
+        }
+        .result-card.neto .result-amount {
+            font-size: 1.7rem;
+        }
+        .result-monthly {
+            font-size: 0.6rem;
+            color: var(--text-secondary);
+            margin-top: 0.15rem;
+        }
+        
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 0.8rem;
+        }
+        .tag {
+            background: var(--tag-bg);
+            border-radius: 40px;
+            padding: 0.25rem 0.8rem;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--step-dot-active);
+        }
+        
+        .nav-row {
+            display: flex;
+            gap: 12px;
+            margin-top: 1.5rem;
+        }
+        button {
+            border: none;
+            background: var(--step-dot-active);
+            color: white;
+            padding: 0.7rem 1.4rem;
+            border-radius: 2.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 48px;
+            min-width: 105px;
+        }
+        button:active {
+            transform: scale(0.96);
+        }
+        .btn-back {
+            background: var(--btn-back-bg);
+            color: var(--step-dot-active);
+            border: 1px solid var(--btn-back-border);
+        }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .legal-note {
+            font-size: 0.65rem;
+            color: var(--legal-note-color);
+            margin-top: 1rem;
+            text-align: center;
+            border-top: 1px solid var(--border-light);
+            padding-top: 0.8rem;
+        }
+        .signature {
+            font-size: 0.65rem;
+            color: var(--signature-color);
+            text-align: center;
+            margin-top: 0.3rem;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        /* Media queries optimizadas para iPhone 14 y posteriores */
+        @media (max-width: 480px) {
+            .app {
+                padding: 1rem 0.8rem 1.25rem;
+            }
+            .screen-heading {
+                font-size: 1.25rem;
+                margin-bottom: 1rem;
+            }
+            .main-title {
+                font-size: 0.85rem;
+                letter-spacing: 0.3px;
+                white-space: normal;
+            }
+            .title-wrapper {
+                flex-wrap: wrap;
+                gap: 0.25rem;
+            }
+            .r-label {
+                font-size: 1.2rem;
+            }
+            .r-salary {
+                font-size: 0.65rem;
+            }
+            .guardia-titulo {
+                font-size: 0.85rem;
+            }
+            .guardia-detalle {
+                font-size: 0.65rem;
+            }
+            .irpf-slider-label {
+                font-size: 0.75rem;
+            }
+            .result-amount {
+                font-size: 1.2rem;
+            }
+            .result-card.neto .result-amount {
+                font-size: 1.5rem;
+            }
+            .extra-pay-checkbox label {
+                font-size: 0.65rem;
+            }
+            .result-label {
+                font-size: 0.65rem;
+            }
+            .tag {
+                font-size: 0.65rem;
+                padding: 0.2rem 0.7rem;
+            }
+            .irpf-slider-value {
+                font-size: 0.9rem;
+                min-width: 50px;
+            }
+        }
+
+        /* Ajustes específicos para iPhone 14 Pro Max y modelos grandes */
+        @media (min-width: 430px) and (max-width: 500px) {
+            .app {
+                padding: 1.25rem 1rem 1.5rem;
+            }
+            .result-amount {
+                font-size: 1.3rem;
+            }
+            .result-card.neto .result-amount {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <div class="header">
+        <div class="title-wrapper">
+            <span class="main-title">CALCULADORA RETRIBUCIONES MIR</span>
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn dark-icon" id="darkModeToggle" aria-label="Modo oscuro">
+                <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+            </button>
+            <button class="icon-btn" id="restartIconBtn" aria-label="Reiniciar">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+    <div class="progress-bar">
+        <div class="step-dot active" data-step="0">1</div>
+        <div class="step-line" data-step="0"></div>
+        <div class="step-dot" data-step="1">2</div>
+        <div class="step-line" data-step="1"></div>
+        <div class="step-dot" data-step="2">3</div>
+        <div class="step-line" data-step="2"></div>
+        <div class="step-dot" data-step="3">4</div>
+    </div>
+
+    <!-- Pantalla 1 -->
+    <div class="screen active" id="screen0">
+        <div class="screen-heading">Selecciona tu año de residencia</div>
+        <div id="rGrid" class="r-grid"></div>
+        <div class="nav-row">
+            <button class="btn-next" id="next0" disabled onclick="goToScreen(1)">Continuar</button>
+        </div>
+    </div>
+
+    <!-- Pantalla 2 -->
+    <div class="screen" id="screen1">
+        <div class="screen-heading">Guardias realizadas este mes</div>
+        <div id="guardiasContainer"></div>
+        <div class="guardia-preview">
+            <span>Total guardias mensuales</span>
+            <span id="previewGuardias">0,00 €</span>
+        </div>
+        <div class="nav-row">
+            <button class="btn-back" onclick="goToScreen(0)">Atrás</button>
+            <button class="btn-next" onclick="goToScreen(2)">Siguiente</button>
+        </div>
+    </div>
+
+    <!-- Pantalla 3 -->
+    <div class="screen" id="screen2">
+        <div class="screen-heading">Porcentaje de retención</div>
+        <div class="irpf-grid" id="irpfGrid"></div>
+        <div class="irpf-slider-container">
+            <div class="irpf-slider-header">
+                <span class="irpf-slider-label">PERSONALIZA TU IRPF</span>
+                <span class="irpf-slider-value" id="irpfSliderVal">18%</span>
+            </div>
+            <div class="irpf-slider-wrapper">
+                <input type="range" id="irpfSlider" min="0" max="45" step="1" value="18">
+            </div>
+        </div>
+        <div class="nav-row">
+            <button class="btn-back" onclick="goToScreen(1)">Atrás</button>
+            <button class="btn-next" id="next2" onclick="goToScreen(3)">Ver retribución</button>
+        </div>
+    </div>
+
+    <!-- Pantalla 4 con layout optimizado -->
+    <div class="screen" id="screen3">
+        <div class="screen-heading">Desglose mensual</div>
+        <div class="tag-row" id="resultTags"></div>
+        
+        <div class="results-grid" id="resultsGrid">
+            <!-- El contenido se genera dinámicamente -->
+        </div>
+        
+        <div class="irpf-slider-container">
+            <div class="irpf-slider-header">
+                <span class="irpf-slider-label">PERSONALIZA TU IRPF</span>
+                <span class="irpf-slider-value" id="resultIRPFVal">18%</span>
+            </div>
+            <div class="irpf-slider-wrapper">
+                <input type="range" id="resultIRPFSlider" min="0" max="45" step="1" value="18">
+            </div>
+        </div>
+        <div class="nav-row"></div>
+        <div class="legal-note">Fuente: Generalitat Valenciana 2026</div>
+        <div class="signature">by Guille ;)</div>
+    </div>
+</div>
+
+<script>
+    const SALARIO_BASE = { 1: 1501.84, 2: 1621.87, 3: 1769.55, 4: 1917.23, 5: 2064.90 };
+    const TARIFA_HORA = {
+        ordinaria: { 1: 13.90, 2: 16.42, 3: 18.95, 4: 21.48, 5: 21.48 },
+        sabado_domingo_festivo: { 1: 15.90, 2: 18.42, 3: 20.95, 4: 23.48, 5: 23.48 }
+    };
+    const HORAS_LV = 17, HORAS_SA = 17, HORAS_DF = 24;
+    const PORC_CONTINGENCIAS_COMUNES = 0.0485;
+    const PORC_DESEMPLEO = 0.0160;
+    const PORC_FORMACION = 0.0010;
+
+    let state = { r: null, guardias: { lv: 0, sab: 0, df: 0 }, irpf: 0.18, extraPay: false };
+    let rGrid, next0Btn, guardiasContainer, previewSpan;
+    let irpfGrid, irpfSlider, irpfSliderVal, next2Btn;
+    let resultIRPFSlider, resultIRPFVal;
+
+    // Haptic feedback
+    function hapticFeedback() {
+        if (window.navigator && window.navigator.vibrate) {
+            window.navigator.vibrate(8);
+        }
+    }
+
+    // Formato español: separador de miles con punto, decimales con coma
+    const formatEuro = (n) => {
+        const num = Number(n);
+        if (isNaN(num)) return '0,00 €';
+        return num.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €';
+    };
+
+    function calcularTotalGuardias() {
+        if (!state.r) return 0;
+        return state.guardias.lv * HORAS_LV * TARIFA_HORA.ordinaria[state.r] +
+               state.guardias.sab * HORAS_SA * TARIFA_HORA.sabado_domingo_festivo[state.r] +
+               state.guardias.df * HORAS_DF * TARIFA_HORA.sabado_domingo_festivo[state.r];
+    }
+
+    function calcularNetoConExtraPay(brutoNormal, irpfPorc, extraPayAmount) {
+        const contComunes = brutoNormal * PORC_CONTINGENCIAS_COMUNES;
+        const desempleo = brutoNormal * PORC_DESEMPLEO;
+        const formacion = brutoNormal * PORC_FORMACION;
+        const totalBrutoConExtra = brutoNormal + extraPayAmount;
+        const irpf = totalBrutoConExtra * irpfPorc;
+        const totalDeducciones = irpf + contComunes + desempleo + formacion;
+        const neto = totalBrutoConExtra - totalDeducciones;
+        return { neto, irpf, contComunes, desempleo, formacion, totalBrutoConExtra };
+    }
+
+    function updateIRPFUI(irpfValue) {
+        const irpfPercent = Math.round(irpfValue * 100);
+        if (irpfSlider) irpfSlider.value = irpfPercent;
+        if (irpfSliderVal) irpfSliderVal.innerText = irpfPercent + '%';
+        if (resultIRPFSlider) resultIRPFSlider.value = irpfPercent;
+        if (resultIRPFVal) resultIRPFVal.innerText = irpfPercent + '%';
+        
+        document.querySelectorAll('.irpf-card').forEach(c => c.classList.remove('selected'));
+        const targetCard = Array.from(document.querySelectorAll('.irpf-card')).find(
+            card => parseInt(card.querySelector('.irpf-pct')?.innerText) === irpfPercent
+        );
+        if (targetCard) targetCard.classList.add('selected');
+    }
+
+    function setIRPF(value) {
+        let nuevo = parseFloat(value);
+        if (isNaN(nuevo)) nuevo = 18;
+        nuevo = Math.min(45, Math.max(0, nuevo));
+        state.irpf = nuevo / 100;
+        updateIRPFUI(state.irpf);
+        if (document.getElementById('screen3').classList.contains('active')) renderResultados();
+        hapticFeedback();
+    }
+
+    function renderRGrid() {
+        rGrid.innerHTML = '';
+        for (let i = 1; i <= 2; i++) {
+            const card = document.createElement('div');
+            card.className = 'r-card' + (state.r === i ? ' selected' : '');
+            card.innerHTML = `<div class="r-label">R${i}</div><div class="r-salary">${formatEuro(SALARIO_BASE[i])}</div>`;
+            card.addEventListener('click', () => {
+                state.r = i;
+                document.querySelectorAll('.r-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                next0Btn.disabled = false;
+                enableProgressBarForStep(1);
+                if (document.getElementById('screen1').classList.contains('active')) renderPantallaGuardias();
+                if (document.getElementById('screen3').classList.contains('active')) renderResultados();
+                hapticFeedback();
+            });
+            rGrid.appendChild(card);
+        }
+        for (let i = 3; i <= 4; i++) {
+            const card = document.createElement('div');
+            card.className = 'r-card' + (state.r === i ? ' selected' : '');
+            card.innerHTML = `<div class="r-label">R${i}</div><div class="r-salary">${formatEuro(SALARIO_BASE[i])}</div>`;
+            card.addEventListener('click', () => {
+                state.r = i;
+                document.querySelectorAll('.r-card').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                next0Btn.disabled = false;
+                enableProgressBarForStep(1);
+                if (document.getElementById('screen1').classList.contains('active')) renderPantallaGuardias();
+                if (document.getElementById('screen3').classList.contains('active')) renderResultados();
+                hapticFeedback();
+            });
+            rGrid.appendChild(card);
+        }
+        const card5 = document.createElement('div');
+        card5.className = 'r-card' + (state.r === 5 ? ' selected' : '');
+        card5.style.gridColumn = 'span 2';
+        card5.style.maxWidth = '50%';
+        card5.style.margin = '0 auto';
+        card5.style.width = '100%';
+        card5.innerHTML = `<div class="r-label">R5</div><div class="r-salary">${formatEuro(SALARIO_BASE[5])}</div>`;
+        card5.addEventListener('click', () => {
+            state.r = 5;
+            document.querySelectorAll('.r-card').forEach(c => c.classList.remove('selected'));
+            card5.classList.add('selected');
+            next0Btn.disabled = false;
+            enableProgressBarForStep(1);
+            if (document.getElementById('screen1').classList.contains('active')) renderPantallaGuardias();
+            if (document.getElementById('screen3').classList.contains('active')) renderResultados();
+            hapticFeedback();
+        });
+        rGrid.appendChild(card5);
+    }
+
+    function enableProgressBarForStep(stepIndex) {
+        const dots = document.querySelectorAll('.step-dot');
+        const lines = document.querySelectorAll('.step-line');
+        for (let i = stepIndex; i <= 3; i++) {
+            if (dots[i]) dots[i].classList.remove('disabled');
+            if (lines[i-1] && i > 0) lines[i-1].classList.remove('disabled');
+        }
+    }
+
+    function disableProgressBarAfter(stepIndex) {
+        const dots = document.querySelectorAll('.step-dot');
+        const lines = document.querySelectorAll('.step-line');
+        for (let i = stepIndex; i <= 3; i++) {
+            if (dots[i]) dots[i].classList.add('disabled');
+            if (lines[i-1] && i > 0) lines[i-1].classList.add('disabled');
+        }
+    }
+
+    function renderPantallaGuardias() {
+        if (!state.r) return;
+        guardiasContainer.innerHTML = `
+            <div class="guardia-section laborables">
+                <div class="guardia-header">
+                    <span class="guardia-titulo">De lunes a viernes</span>
+                    <span class="guardia-detalle">${HORAS_LV} horas · ${TARIFA_HORA.ordinaria[state.r].toFixed(2)} €/hora</span>
+                </div>
+                <div class="guardia-row">
+                    <div class="guardia-controls">
+                        <button class="btn-count" data-tipo="lv" data-delta="-1">−</button>
+                        <span class="count-display" id="cntLv">${state.guardias.lv}</span>
+                        <button class="btn-count" data-tipo="lv" data-delta="1">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="guardia-section sabados">
+                <div class="guardia-header">
+                    <span class="guardia-titulo">Sábados</span>
+                    <span class="guardia-detalle">${HORAS_SA} horas · ${TARIFA_HORA.sabado_domingo_festivo[state.r].toFixed(2)} €/hora</span>
+                </div>
+                <div class="guardia-row">
+                    <div class="guardia-controls">
+                        <button class="btn-count" data-tipo="sab" data-delta="-1">−</button>
+                        <span class="count-display" id="cntSab">${state.guardias.sab}</span>
+                        <button class="btn-count" data-tipo="sab" data-delta="1">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="guardia-section festivos">
+                <div class="guardia-header">
+                    <span class="guardia-titulo">Domingos y festivos</span>
+                    <span class="guardia-detalle">${HORAS_DF} horas · ${TARIFA_HORA.sabado_domingo_festivo[state.r].toFixed(2)} €/hora</span>
+                </div>
+                <div class="guardia-row">
+                    <div class="guardia-controls">
+                        <button class="btn-count" data-tipo="df" data-delta="-1">−</button>
+                        <span class="count-display" id="cntDf">${state.guardias.df}</span>
+                        <button class="btn-count" data-tipo="df" data-delta="1">+</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.querySelectorAll('.btn-count').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const tipo = btn.dataset.tipo;
+                const delta = parseInt(btn.dataset.delta);
+                if (tipo === 'lv') state.guardias.lv = Math.max(0, state.guardias.lv + delta);
+                if (tipo === 'sab') state.guardias.sab = Math.max(0, state.guardias.sab + delta);
+                if (tipo === 'df') state.guardias.df = Math.max(0, state.guardias.df + delta);
+                renderPantallaGuardias();
+                actualizarPreviewGuardias();
+                if (document.getElementById('screen3').classList.contains('active')) renderResultados();
+                hapticFeedback();
+            });
+        });
+        actualizarPreviewGuardias();
+    }
+
+    function actualizarPreviewGuardias() {
+        if (!state.r) return;
+        previewSpan.innerText = formatEuro(calcularTotalGuardias());
+    }
+
+    function renderIRPFGrid() {
+        const porcentajes = [5, 10, 15, 18, 22, 30];
+        irpfGrid.innerHTML = '';
+        porcentajes.forEach(pct => {
+            const card = document.createElement('div');
+            const isSelected = Math.abs(state.irpf - pct/100) < 0.001;
+            card.className = `irpf-card ${isSelected ? 'selected' : ''}`;
+            card.innerHTML = `<div class="irpf-pct">${pct}%</div>`;
+            card.addEventListener('click', () => setIRPF(pct));
+            irpfGrid.appendChild(card);
+        });
+        updateIRPFUI(state.irpf);
+    }
+
+    function renderResultados() {
+        if (!state.r) return;
+        const base = SALARIO_BASE[state.r];
+        const totalGuardias = calcularTotalGuardias();
+        const brutoNormal = base + totalGuardias;
+        const extraPayAmount = state.extraPay ? SALARIO_BASE[state.r] : 0;
+        const { neto, irpf, contComunes, desempleo, formacion, totalBrutoConExtra } = calcularNetoConExtraPay(brutoNormal, state.irpf, extraPayAmount);
+        const irpfPercent = Math.round(state.irpf * 100);
+        const otrasDeducciones = contComunes + desempleo + formacion;
+
+        const extraPayCheckedAttr = state.extraPay ? 'checked' : '';
+        const extraPayAmountDisplay = state.extraPay ? formatEuro(extraPayAmount) : '0,00 €';
+        const extraPayActiveClass = state.extraPay ? 'extra-pay-active' : '';
+
+        document.getElementById('resultsGrid').innerHTML = `
+            <!-- Fila 1: Salario base y Paga extra -->
+            <div class="result-card">
+                <div class="result-label">Salario base</div>
+                <div class="result-amount">${formatEuro(base)}</div>
+                <div class="result-monthly"></div>
+            </div>
+            <div class="result-card extra-pay-card ${extraPayActiveClass}">
+                <div class="extra-pay-header">
+                    <div class="result-label">Paga extra</div>
+                    <div class="extra-pay-checkbox">
+                        <input type="checkbox" id="extraPayCheckboxInCard" ${extraPayCheckedAttr}>
+                        <label for="extraPayCheckboxInCard">Incluir</label>
+                    </div>
+                </div>
+                <div class="result-amount">${extraPayAmountDisplay}</div>
+                <div class="result-monthly"></div>
+            </div>
+            
+            <!-- Fila 2: Guardias total y Retención IRPF -->
+            <div class="result-card">
+                <div class="result-label">Guardias total</div>
+                <div class="result-amount">${formatEuro(totalGuardias)}</div>
+                <div class="result-monthly"></div>
+            </div>
+            <div class="result-card irpf-card-result">
+                <div class="result-label">Retención IRPF</div>
+                <div class="result-amount">- ${formatEuro(irpf)}</div>
+                <div class="result-monthly">${irpfPercent}% sobre el bruto</div>
+            </div>
+            
+            <!-- Fila 3: Salario bruto y Otras deducciones -->
+            <div class="result-card">
+                <div class="result-label">Salario bruto</div>
+                <div class="result-amount">${formatEuro(totalBrutoConExtra)}</div>
+                <div class="result-monthly">base + guardias${state.extraPay ? ' + paga extra' : ''}</div>
+            </div>
+            <div class="result-card deducciones">
+                <div class="result-label">Otras deducciones</div>
+                <div class="result-amount">- ${formatEuro(otrasDeducciones)}</div>
+                <div class="result-monthly">Cont. Com. (4.85%) · Desem. (1.60%) · FP (0.10%)</div>
+            </div>
+            
+            <!-- Fila 4: Salario neto (full width) -->
+            <div class="result-card neto">
+                <div class="result-label">Salario neto estimado</div>
+                <div class="result-amount">${formatEuro(neto)}</div>
+                <div class="result-monthly"></div>
+            </div>
+        `;
+        
+        // Añadir evento al checkbox de la paga extra
+        const extraPayCheckboxInCard = document.getElementById('extraPayCheckboxInCard');
+        if (extraPayCheckboxInCard) {
+            extraPayCheckboxInCard.addEventListener('change', (e) => {
+                state.extraPay = e.target.checked;
+                renderResultados();
+                hapticFeedback();
+            });
+        }
+        
+        document.getElementById('resultTags').innerHTML = `<span class="tag">R${state.r}</span><span class="tag">${state.guardias.lv} L-V</span><span class="tag">${state.guardias.sab} S</span><span class="tag">${state.guardias.df} D/F</span><span class="tag">IRPF ${irpfPercent}%</span>${state.extraPay ? '<span class="tag">Paga extra</span>' : ''}`;
+        updateIRPFUI(state.irpf);
+    }
+
+    function updateProgressBar(currentIndex) {
+        document.querySelectorAll('.step-dot').forEach((dot, idx) => {
+            dot.classList.toggle('active', idx === currentIndex);
+            dot.classList.toggle('done', idx < currentIndex);
+        });
+        document.querySelectorAll('.step-line').forEach((line, idx) => {
+            line.classList.toggle('done', idx < currentIndex);
+        });
+    }
+
+    function setupProgressBarNavigation() {
+        document.querySelectorAll('.step-dot, .step-line').forEach(el => {
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                let step = parseInt(el.dataset.step);
+                if (isNaN(step)) step = parseInt(el.closest('.step-dot')?.dataset.step);
+                if (step !== undefined && (step === 0 || state.r)) goToScreen(step);
+            });
+        });
+        disableProgressBarAfter(1);
+    }
+
+    function goToScreen(index) {
+        document.querySelectorAll('.screen').forEach((scr, i) => scr.classList.toggle('active', i === index));
+        updateProgressBar(index);
+        if (index === 1) renderPantallaGuardias();
+        if (index === 2) renderIRPFGrid();
+        if (index === 3) renderResultados();
+        if (index >= 1) enableProgressBarForStep(2);
+        hapticFeedback();
+    }
+
+    function reiniciarApp() {
+        state = { r: null, guardias: { lv: 0, sab: 0, df: 0 }, irpf: 0.18, extraPay: false };
+        setIRPF(18);
+        renderRGrid();
+        next0Btn.disabled = true;
+        disableProgressBarAfter(1);
+        goToScreen(0);
+        hapticFeedback();
+    }
+
+    function initDarkMode() {
+        const toggle = document.getElementById('darkModeToggle');
+        const isDark = localStorage.getItem('darkMode') === 'true';
+        if (isDark) document.body.classList.add('dark');
+        toggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark'));
+            hapticFeedback();
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        rGrid = document.getElementById('rGrid');
+        next0Btn = document.getElementById('next0');
+        guardiasContainer = document.getElementById('guardiasContainer');
+        previewSpan = document.getElementById('previewGuardias');
+        irpfGrid = document.getElementById('irpfGrid');
+        irpfSlider = document.getElementById('irpfSlider');
+        irpfSliderVal = document.getElementById('irpfSliderVal');
+        next2Btn = document.getElementById('next2');
+        resultIRPFSlider = document.getElementById('resultIRPFSlider');
+        resultIRPFVal = document.getElementById('resultIRPFVal');
+        document.getElementById('restartIconBtn')?.addEventListener('click', reiniciarApp);
+
+        renderRGrid();
+        setupProgressBarNavigation();
+        if (irpfSlider) irpfSlider.addEventListener('input', (e) => setIRPF(e.target.value));
+        if (resultIRPFSlider) resultIRPFSlider.addEventListener('input', (e) => setIRPF(e.target.value));
+        setIRPF(18);
+        initDarkMode();
+        window.goToScreen = goToScreen;
+    });
+</script>
+</body>
+</html>
